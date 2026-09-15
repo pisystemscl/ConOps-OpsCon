@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "models": [],
+  "status": "prepared_not_trained",
+  "notice": "Register a LoRA adapter only after expert-validated training and evaluation."
+}
