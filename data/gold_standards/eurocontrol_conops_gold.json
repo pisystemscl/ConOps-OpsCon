@@ -1,0 +1,53 @@
+{
+  "document": "EUROCONTROL CONOPS 2029",
+  "validation_status": "manual_seed_requires_expert_review",
+  "expected_stakeholders": [
+    "Airspace Users",
+    "Airport Operators",
+    "ANSPs",
+    "Network Manager",
+    "Operational Stakeholders",
+    "ATC Centres",
+    "Military Actors",
+    "ATM Data Service Providers",
+    "New Entrants"
+  ],
+  "expected_services": [
+    "Optimised Network Design and Utilisation",
+    "Optimum Capacity and Flight Efficiency Planning",
+    "Trajectory and Cooperative Traffic Management",
+    "Airport and TMA Network Integration",
+    "Network Components and CNS Infrastructure"
+  ],
+  "expected_capabilities": [
+    "Full dynamicity of airspace organisation and utilisation",
+    "Cross-border airspace structures",
+    "Enhanced Air-Ground data exchanges",
+    "FF-ICE/R1 services",
+    "FF-ICE/R2 services",
+    "Continuous trajectory synchronisation",
+    "Full sharing of relevant flight information",
+    "Full scalability and resilience"
+  ],
+  "expected_interfaces": [
+    "FF-ICE/eFPL trajectory exchange",
+    "AOP/NOP interfaces",
+    "SWIM air-ground exchange",
+    "SWIM ground-ground exchange",
+    "civil-military information exchange",
+    "OAT flight plans",
+    "real-time traffic information sharing",
+    "ATC tactical updates with network"
+  ],
+  "expected_risks": [
+    "capacity constraints",
+    "staff shortages",
+    "system outage",
+    "cyberattacks",
+    "network unavailability",
+    "certification issues",
+    "regulatory dependency",
+    "SESAR validation dependency",
+    "traffic demand uncertainty"
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "document_id": "nasa_uam_opscon",
+  "document_name": "UAM Passenger-carrying OpsCon",
+  "validation_status": "manual_seed_requires_expert_review",
+  "expected_classification": "OpsCon",
+  "classification_rationale": "The document describes future UAM operations and includes both problem-space and solution-space material. Expert confirmation remains required.",
+  "expected_rules_status": {
+    "D1": {
+      "expected_status": "present",
+      "evidence_quote": "The document explains why operational change is needed.",
+      "source_page": 4,
+      "expert_comment": "Problem-space motivation is present."
+    },
+    "D2": {
+      "expected_status": "present",
+      "evidence_quote": "The document describes how future UAM operations will function.",
+      "source_page": 10,
+      "expert_comment": "Solution-space orientation is present."
+    }
+  },
+  "expected_stakeholders": [
+    {
+      "id": "STK-GOLD-001",
+      "name": "Airspace Users",
+      "role": "Operational actor",
+      "evidence_quote": "Airspace users participate in future UAM operations.",
+      "source_page": 52
+    }
+  ],
+  "expected_requirements": [
+    {
+      "id": "REQ-GOLD-001",
+      "text": "The system shall support safe UAM port and pad operations.",
+      "evidence_quote": "Safe port and pad operations are required.",
+      "source_page": 38
+    }
+  ],
+  "expected_interfaces": [
+    {
+      "id": "INT-GOLD-001",
+      "name": "Certification data exchange",
+      "source_actor": "UAM operators",
+      "target_actor": "FAA",
+      "exchanged_item": "Certification data",
+      "flow_type": "Information",
+      "evidence_quote": "Operators exchange certification data with the FAA.",
+      "source_page": 38
+    }
+  ],
+  "expected_risks": [
+    {
+      "id": "RISK-GOLD-001",
+      "text": "Certification and standardization risks may delay UAM deployment.",
+      "mitigation": "Expert validation required.",
+      "evidence_quote": "Certification may delay deployment.",
+      "source_page": 38
+    }
+  ],
+  "expected_future_actions": [],
+  "expected_services": [],
+  "expected_capabilities": [],
+  "expected_constituent_systems": [],
+  "expected_operational_flows": [],
+  "forbidden_violations_expected": [],
+  "evidence": [
+    {
+      "page": 38,
+      "citation": "Manual placeholder citation to be replaced by an expert excerpt."
+    }
+  ]
+}

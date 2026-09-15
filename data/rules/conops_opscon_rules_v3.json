@@ -1,0 +1,1031 @@
+{
+    "version":  "3.0",
+    "source":  "ConOps \u0026 OpsCon Evaluation Rules - AI-ready rules",
+    "purpose":  [
+                    "classify documents as ConOps, OpsCon, Hybrid or Neither",
+                    "evaluate document quality",
+                    "support RAG",
+                    "guide AI-assisted generation",
+                    "support scoring and confidence estimation"
+                ],
+    "scoring_policy":  {
+                           "alpha":  0.4,
+                           "beta":  1.5,
+                           "recommended_missing_factor":  0.2,
+                           "expected_present":  "+weight",
+                           "expected_missing":  "-alpha * weight",
+                           "forbidden_present":  "-beta * weight",
+                           "forbidden_absent":  "+weight",
+                           "optional_missing":  "0"
+                       },
+    "fundamental_rules":  [
+                              {
+                                  "id":  "D1",
+                                  "name":  "Problem Space orientation",
+                                  "family":  "D",
+                                  "type":  "discriminating",
+                                  "expected_for":  [
+                                                       "ConOps"
+                                                   ],
+                                  "forbidden_for":  [
+                                                        "OpsCon"
+                                                    ],
+                                  "weight":  10,
+                                  "description":  "The document describes the current situation, stakeholder needs, environmental evolution, motivations for change and desired future outcomes. It does not explain how a future operational solution will operate.",
+                                  "evidence_keywords":  [
+                                                            "current situation",
+                                                            "stakeholder needs",
+                                                            "environmental evolution",
+                                                            "motivation for change",
+                                                            "desired future outcomes",
+                                                            "problem space",
+                                                            "why change"
+                                                        ],
+                                  "evaluation_questions":  [
+                                                               "Why is change needed?",
+                                                               "Does the document focus on needs rather than realization?"
+                                                           ],
+                                  "expected_for_conops":  "discriminating",
+                                  "expected_for_opscon":  "not_applicable",
+                                  "forbidden_elements":  [
+
+                                                         ],
+                                  "purpose":  "The document describes the current situation, stakeholder needs, environmental evolution, motivations for change and desired future outcomes. It does not explain how a future operational solution will operate.",
+                                  "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                              },
+                              {
+                                  "id":  "D2",
+                                  "name":  "Solution Space orientation",
+                                  "family":  "D",
+                                  "type":  "discriminating",
+                                  "expected_for":  [
+                                                       "OpsCon"
+                                                   ],
+                                  "forbidden_for":  [
+                                                        "ConOps"
+                                                    ],
+                                  "weight":  10,
+                                  "description":  "The document describes how future services and capabilities will be operationally realized.",
+                                  "evidence_keywords":  [
+                                                            "solution space",
+                                                            "future operational sos",
+                                                            "operational realization",
+                                                            "how future operations",
+                                                            "constituent systems",
+                                                            "operational flows"
+                                                        ],
+                                  "evaluation_questions":  [
+                                                               "How are future operations performed?",
+                                                               "Is a future operational SoS described?"
+                                                           ],
+                                  "expected_for_conops":  "not_applicable",
+                                  "expected_for_opscon":  "discriminating",
+                                  "forbidden_elements":  [
+
+                                                         ],
+                                  "purpose":  "The document describes how future services and capabilities will be operationally realized.",
+                                  "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                              }
+                          ],
+    "conops_rules":  [
+                         {
+                             "id":  "C1",
+                             "name":  "Current operational situation exists",
+                             "family":  "ConOps",
+                             "expected":  "mandatory",
+                             "forbidden":  false,
+                             "weight":  4,
+                             "description":  "The current operational world is described.",
+                             "evidence_keywords":  [
+                                                       "current situation",
+                                                       "as-is",
+                                                       "existing services",
+                                                       "current stakeholders",
+                                                       "current practices",
+                                                       "current limitations",
+                                                       "pain points"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "How is the mission performed today?",
+                                                          "What operational limitations exist today?"
+                                                      ],
+                             "type":  "mandatory",
+                             "expected_for_conops":  "mandatory",
+                             "expected_for_opscon":  "not_applicable",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "The current operational world is described.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "C2",
+                             "name":  "Stakeholders exist",
+                             "family":  "ConOps",
+                             "expected":  "mandatory",
+                             "forbidden":  false,
+                             "weight":  4,
+                             "description":  "Stakeholders affected by the problem are identified with role, interest and influence when available.",
+                             "evidence_keywords":  [
+                                                       "stakeholder",
+                                                       "user",
+                                                       "customer",
+                                                       "operator",
+                                                       "regulator",
+                                                       "community",
+                                                       "partner",
+                                                       "role",
+                                                       "interest",
+                                                       "influence"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Who is affected?",
+                                                          "Who benefits from future improvements?"
+                                                      ],
+                             "type":  "mandatory",
+                             "expected_for_conops":  "mandatory",
+                             "expected_for_opscon":  "not_applicable",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "Stakeholders affected by the problem are identified with role, interest and influence when available.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "C3",
+                             "name":  "Operational environment exists",
+                             "family":  "ConOps",
+                             "expected":  "mandatory",
+                             "forbidden":  false,
+                             "weight":  4,
+                             "description":  "The operational or strategic environment is characterized.",
+                             "evidence_keywords":  [
+                                                       "operational environment",
+                                                       "strategic environment",
+                                                       "regulation",
+                                                       "societal trend",
+                                                       "market trend",
+                                                       "technology trend",
+                                                       "sustainability",
+                                                       "institutional constraint"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "What external factors influence the future concept?",
+                                                          "Which environmental changes are expected?"
+                                                      ],
+                             "type":  "mandatory",
+                             "expected_for_conops":  "mandatory",
+                             "expected_for_opscon":  "not_applicable",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "The operational or strategic environment is characterized.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "C4",
+                             "name":  "Motivation for change exists",
+                             "family":  "ConOps",
+                             "expected":  "mandatory",
+                             "forbidden":  false,
+                             "weight":  8,
+                             "description":  "The document explicitly justifies why change is needed.",
+                             "evidence_keywords":  [
+                                                       "unmet need",
+                                                       "operational deficiency",
+                                                       "future challenge",
+                                                       "capability shortfall",
+                                                       "limitation",
+                                                       "new expectation",
+                                                       "regulatory change",
+                                                       "why change"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Why is the current situation no longer satisfactory?",
+                                                          "What happens if nothing changes?"
+                                                      ],
+                             "type":  "mandatory",
+                             "expected_for_conops":  "mandatory",
+                             "expected_for_opscon":  "not_applicable",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "The document explicitly justifies why change is needed.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "C5",
+                             "name":  "Stakeholder needs and expected outcomes exist",
+                             "family":  "ConOps",
+                             "expected":  "mandatory",
+                             "forbidden":  false,
+                             "weight":  8,
+                             "description":  "Stakeholder needs, jobs-to-be-done, expected outcomes, desired improvements and pain points are described.",
+                             "evidence_keywords":  [
+                                                       "stakeholder need",
+                                                       "job-to-be-done",
+                                                       "expected outcome",
+                                                       "desired improvement",
+                                                       "pain point",
+                                                       "value criteria"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "What does each stakeholder need to accomplish?",
+                                                          "What outcomes do they expect?"
+                                                      ],
+                             "forbidden_elements":  [
+                                                        "value proposition",
+                                                        "roi",
+                                                        "revenue model",
+                                                        "business model",
+                                                        "strategic positioning"
+                                                    ],
+                             "type":  "mandatory",
+                             "expected_for_conops":  "mandatory",
+                             "expected_for_opscon":  "not_applicable",
+                             "purpose":  "Stakeholder needs, jobs-to-be-done, expected outcomes, desired improvements and pain points are described.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "C6",
+                             "name":  "Future services exist",
+                             "family":  "ConOps",
+                             "expected":  "mandatory",
+                             "forbidden":  false,
+                             "weight":  8,
+                             "description":  "Future services expected by stakeholders are described from the user perspective and remain black-box.",
+                             "evidence_keywords":  [
+                                                       "future service",
+                                                       "expected service",
+                                                       "new service",
+                                                       "enhanced service",
+                                                       "retired service",
+                                                       "user perspective"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Which services are expected in the future?",
+                                                          "Which stakeholder needs does each service address?"
+                                                      ],
+                             "forbidden_elements":  [
+                                                        "service allocation",
+                                                        "operational realization",
+                                                        "sla",
+                                                        "interface specification"
+                                                    ],
+                             "type":  "mandatory",
+                             "expected_for_conops":  "mandatory",
+                             "expected_for_opscon":  "not_applicable",
+                             "purpose":  "Future services expected by stakeholders are described from the user perspective and remain black-box.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "C7",
+                             "name":  "Capability gaps exist",
+                             "family":  "ConOps",
+                             "expected":  "recommended",
+                             "forbidden":  false,
+                             "weight":  3,
+                             "description":  "High-level missing, insufficient or emerging capability needs are identified.",
+                             "evidence_keywords":  [
+                                                       "capability gap",
+                                                       "missing capability",
+                                                       "insufficient capability",
+                                                       "emerging capability need",
+                                                       "capability shortfall"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "What capabilities are missing today?",
+                                                          "Which capabilities are inadequate?"
+                                                      ],
+                             "forbidden_elements":  [
+                                                        "make-or-buy decision"
+                                                    ],
+                             "type":  "recommended",
+                             "expected_for_conops":  "recommended",
+                             "expected_for_opscon":  "not_applicable",
+                             "purpose":  "High-level missing, insufficient or emerging capability needs are identified.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "C8",
+                             "name":  "Future capabilities exist",
+                             "family":  "ConOps",
+                             "expected":  "recommended",
+                             "forbidden":  false,
+                             "weight":  4,
+                             "description":  "Future capabilities are solution-independent and may include roadmap intentions without detailed plans.",
+                             "evidence_keywords":  [
+                                                       "future capability",
+                                                       "expected capability",
+                                                       "capability roadmap",
+                                                       "target capability"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "What capabilities must exist in the future operational world?"
+                                                      ],
+                             "forbidden_elements":  [
+                                                        "capability allocation",
+                                                        "constituent ownership"
+                                                    ],
+                             "type":  "recommended",
+                             "expected_for_conops":  "recommended",
+                             "expected_for_opscon":  "not_applicable",
+                             "purpose":  "Future capabilities are solution-independent and may include roadmap intentions without detailed plans.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "C9",
+                             "name":  "No committed operational architecture",
+                             "family":  "ConOps",
+                             "expected":  "forbidden_absence",
+                             "forbidden":  true,
+                             "critical":  true,
+                             "weight":  8,
+                             "description":  "A ConOps shall not commit to a future operational architecture or SoS structure.",
+                             "evidence_keywords":  [
+
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Is the future solution already operationally designed?",
+                                                          "Are architecture decisions committed?"
+                                                      ],
+                             "forbidden_elements":  [
+                                                        "future operational sos",
+                                                        "constituent system",
+                                                        "system decomposition",
+                                                        "architecture view",
+                                                        "sos structure",
+                                                        "service allocation",
+                                                        "detailed operational responsibility",
+                                                        "make-or-buy",
+                                                        "sla",
+                                                        "kpi",
+                                                        "system boundary",
+                                                        "governance mechanism"
+                                                    ],
+                             "type":  "forbidden",
+                             "expected_for_conops":  "forbidden_absence",
+                             "expected_for_opscon":  "not_applicable",
+                             "purpose":  "A ConOps shall not commit to a future operational architecture or SoS structure.",
+                             "penalty_logic":  "present=-beta*weight; absent=+weight"
+                         },
+                         {
+                             "id":  "C10",
+                             "name":  "No detailed operational realization",
+                             "family":  "ConOps",
+                             "expected":  "forbidden_absence",
+                             "forbidden":  true,
+                             "critical":  true,
+                             "weight":  8,
+                             "description":  "A ConOps shall not define executable realization of future services.",
+                             "evidence_keywords":  [
+
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Is a scenario illustrative or executable?",
+                                                          "Does it specify future operations?"
+                                                      ],
+                             "forbidden_elements":  [
+                                                        "workflow",
+                                                        "bpmn",
+                                                        "sequence diagram",
+                                                        "message exchange",
+                                                        "operational thread",
+                                                        "interface specification",
+                                                        "swimlane",
+                                                        "detailed procedure",
+                                                        "actor-system interaction model"
+                                                    ],
+                             "type":  "forbidden",
+                             "expected_for_conops":  "forbidden_absence",
+                             "expected_for_opscon":  "not_applicable",
+                             "purpose":  "A ConOps shall not define executable realization of future services.",
+                             "penalty_logic":  "present=-beta*weight; absent=+weight"
+                         },
+                         {
+                             "id":  "C11",
+                             "name":  "Stakeholder-oriented future scenarios may exist",
+                             "family":  "ConOps",
+                             "expected":  "optional",
+                             "forbidden":  false,
+                             "weight":  2,
+                             "description":  "Illustrative future scenarios may clarify stakeholder experiences without becoming executable.",
+                             "evidence_keywords":  [
+                                                       "user journey",
+                                                       "mission narrative",
+                                                       "illustrative story",
+                                                       "stakeholder story",
+                                                       "operational vignette",
+                                                       "day-in-the-life",
+                                                       "storyboard"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Does the scenario illustrate a future experience?"
+                                                      ],
+                             "forbidden_elements":  [
+                                                        "executable workflow",
+                                                        "operational thread"
+                                                    ],
+                             "type":  "optional",
+                             "expected_for_conops":  "optional",
+                             "expected_for_opscon":  "not_applicable",
+                             "purpose":  "Illustrative future scenarios may clarify stakeholder experiences without becoming executable.",
+                             "penalty_logic":  "present=+weight; missing=0"
+                         },
+                         {
+                             "id":  "C12",
+                             "name":  "Shared future vision exists",
+                             "family":  "ConOps",
+                             "expected":  "mandatory",
+                             "forbidden":  false,
+                             "weight":  5,
+                             "description":  "The document establishes a shared understanding of the desired future operational world.",
+                             "evidence_keywords":  [
+                                                       "shared future vision",
+                                                       "operational vision",
+                                                       "desired future operational world",
+                                                       "common understanding",
+                                                       "target vision"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Can stakeholders visualize the future?",
+                                                          "Does the document create common understanding?"
+                                                      ],
+                             "type":  "mandatory",
+                             "expected_for_conops":  "mandatory",
+                             "expected_for_opscon":  "not_applicable",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "The document establishes a shared understanding of the desired future operational world.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "C13",
+                             "name":  "Constraints for future solutions exist",
+                             "family":  "ConOps",
+                             "expected":  "recommended",
+                             "forbidden":  false,
+                             "weight":  3,
+                             "description":  "Constraints that any future OpsCon must respect are identified.",
+                             "evidence_keywords":  [
+                                                       "safety constraint",
+                                                       "regulatory constraint",
+                                                       "interoperability constraint",
+                                                       "service continuity",
+                                                       "system not retired",
+                                                       "social acceptance",
+                                                       "privacy",
+                                                       "temporal constraint",
+                                                       "deployment horizon"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "What must any future OpsCon respect?",
+                                                          "What cannot change regardless of the solution?"
+                                                      ],
+                             "type":  "recommended",
+                             "expected_for_conops":  "recommended",
+                             "expected_for_opscon":  "not_applicable",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "Constraints that any future OpsCon must respect are identified.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "C14",
+                             "name":  "Multiple opportunity areas may exist",
+                             "family":  "ConOps",
+                             "expected":  "optional",
+                             "forbidden":  false,
+                             "weight":  2,
+                             "description":  "The problem space may contain several opportunity areas and need not be exhaustive; multiple OpsCon responses may derive from one ConOps.",
+                             "evidence_keywords":  [
+                                                       "opportunity area",
+                                                       "multiple opportunities",
+                                                       "different responses",
+                                                       "multiple opscon",
+                                                       "non-exhaustive scope"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Does the ConOps leave room for multiple future responses?"
+                                                      ],
+                             "type":  "optional",
+                             "expected_for_conops":  "optional",
+                             "expected_for_opscon":  "not_applicable",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "The problem space may contain several opportunity areas and need not be exhaustive; multiple OpsCon responses may derive from one ConOps.",
+                             "penalty_logic":  "present=+weight; missing=0"
+                         }
+                     ],
+    "opscon_rules":  [
+                         {
+                             "id":  "O1",
+                             "name":  "Future Operational SoS exists",
+                             "family":  "OpsCon",
+                             "expected":  "mandatory",
+                             "forbidden":  false,
+                             "weight":  8,
+                             "description":  "The future operational System-of-Systems is explicitly identified.",
+                             "evidence_keywords":  [
+                                                       "future operational sos",
+                                                       "future system-of-systems",
+                                                       "operational sos",
+                                                       "constituent systems",
+                                                       "operational actors"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "What future operational SoS is being described?"
+                                                      ],
+                             "type":  "mandatory",
+                             "expected_for_conops":  "not_applicable",
+                             "expected_for_opscon":  "mandatory",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "The future operational System-of-Systems is explicitly identified.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "O2",
+                             "name":  "SoS boundaries exist",
+                             "family":  "OpsCon",
+                             "expected":  "mandatory",
+                             "forbidden":  false,
+                             "weight":  6,
+                             "description":  "The boundaries of the future operational SoS are defined.",
+                             "evidence_keywords":  [
+                                                       "sos boundary",
+                                                       "system boundary",
+                                                       "inside the system",
+                                                       "outside the system",
+                                                       "internal system",
+                                                       "external system",
+                                                       "system of interest"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "What belongs inside and outside the SoS?"
+                                                      ],
+                             "type":  "mandatory",
+                             "expected_for_conops":  "not_applicable",
+                             "expected_for_opscon":  "mandatory",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "The boundaries of the future operational SoS are defined.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "O3",
+                             "name":  "Operational services are allocated",
+                             "family":  "OpsCon",
+                             "expected":  "mandatory",
+                             "forbidden":  false,
+                             "weight":  8,
+                             "description":  "Operational services are allocated to constituent systems with provider and beneficiary information.",
+                             "evidence_keywords":  [
+                                                       "service allocation",
+                                                       "allocated service",
+                                                       "service provider",
+                                                       "beneficiary",
+                                                       "service orientation",
+                                                       "performance target",
+                                                       "sla"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Which constituent realizes each service?",
+                                                          "Who provides and receives the service?"
+                                                      ],
+                             "type":  "mandatory",
+                             "expected_for_conops":  "not_applicable",
+                             "expected_for_opscon":  "mandatory",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "Operational services are allocated to constituent systems with provider and beneficiary information.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "O4",
+                             "name":  "Operational scenarios exist",
+                             "family":  "OpsCon",
+                             "expected":  "mandatory",
+                             "forbidden":  false,
+                             "weight":  8,
+                             "description":  "Executable operational scenarios explain how the future SoS operates.",
+                             "evidence_keywords":  [
+                                                       "use case",
+                                                       "bpmn",
+                                                       "sequence diagram",
+                                                       "operational thread",
+                                                       "workflow",
+                                                       "trigger",
+                                                       "operational scenario"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Can scenarios support architecture and requirement derivation?"
+                                                      ],
+                             "type":  "mandatory",
+                             "expected_for_conops":  "not_applicable",
+                             "expected_for_opscon":  "mandatory",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "Executable operational scenarios explain how the future SoS operates.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "O5",
+                             "name":  "Operational flows exist",
+                             "family":  "OpsCon",
+                             "expected":  "mandatory",
+                             "forbidden":  false,
+                             "weight":  8,
+                             "description":  "Information, material, energy or financial flows among constituents are identified.",
+                             "evidence_keywords":  [
+                                                       "operational flow",
+                                                       "information flow",
+                                                       "material flow",
+                                                       "energy flow",
+                                                       "financial flow",
+                                                       "mei_flow",
+                                                       "data exchange",
+                                                       "command flow"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "What is exchanged?",
+                                                          "What triggers each exchange?"
+                                                      ],
+                             "type":  "mandatory",
+                             "expected_for_conops":  "not_applicable",
+                             "expected_for_opscon":  "mandatory",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "Information, material, energy or financial flows among constituents are identified.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "O6",
+                             "name":  "Constituent systems are identified",
+                             "family":  "OpsCon",
+                             "expected":  "mandatory",
+                             "forbidden":  false,
+                             "weight":  8,
+                             "description":  "The constituent systems composing the future operational SoS are identified.",
+                             "evidence_keywords":  [
+                                                       "constituent system",
+                                                       "participating system",
+                                                       "technical system",
+                                                       "human operator system"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Which systems participate in operations?",
+                                                          "What are their roles?"
+                                                      ],
+                             "type":  "mandatory",
+                             "expected_for_conops":  "not_applicable",
+                             "expected_for_opscon":  "mandatory",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "The constituent systems composing the future operational SoS are identified.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "O6a",
+                             "name":  "Promoter System of Interest is identified",
+                             "family":  "OpsCon",
+                             "expected":  "recommended",
+                             "forbidden":  false,
+                             "weight":  4,
+                             "description":  "The System of Interest owned or developed by the Promoter is identified among constituents.",
+                             "evidence_keywords":  [
+                                                       "promoter system of interest",
+                                                       "promoter-owned system",
+                                                       "system of interest",
+                                                       "soi"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Which System of Interest belongs to the Promoter?"
+                                                      ],
+                             "type":  "recommended",
+                             "expected_for_conops":  "not_applicable",
+                             "expected_for_opscon":  "recommended",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "The System of Interest owned or developed by the Promoter is identified among constituents.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "O7",
+                             "name":  "Capabilities are allocated",
+                             "family":  "OpsCon",
+                             "expected":  "mandatory",
+                             "forbidden":  false,
+                             "weight":  8,
+                             "description":  "Operational capabilities are allocated to constituents, including user-facing and lifecycle-facing capabilities when available.",
+                             "evidence_keywords":  [
+                                                       "capability allocation",
+                                                       "allocated capability",
+                                                       "ucs capability",
+                                                       "es capability",
+                                                       "required state",
+                                                       "responsibility allocation"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Which constituent realizes each capability?"
+                                                      ],
+                             "type":  "mandatory",
+                             "expected_for_conops":  "not_applicable",
+                             "expected_for_opscon":  "mandatory",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "Operational capabilities are allocated to constituents, including user-facing and lifecycle-facing capabilities when available.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "O8",
+                             "name":  "Interfaces supporting operational flows exist",
+                             "family":  "OpsCon",
+                             "expected":  "recommended",
+                             "forbidden":  false,
+                             "weight":  4,
+                             "description":  "Technical, human-system or natural interfaces supporting operational flows are identified.",
+                             "evidence_keywords":  [
+                                                       "interface specification",
+                                                       "api",
+                                                       "communication link",
+                                                       "interoperability interface",
+                                                       "technical interface",
+                                                       "human-system interface",
+                                                       "natural interface",
+                                                       "icd"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Which interfaces support exchanges?",
+                                                          "What flow does each interface carry?"
+                                                      ],
+                             "type":  "recommended",
+                             "expected_for_conops":  "not_applicable",
+                             "expected_for_opscon":  "recommended",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "Technical, human-system or natural interfaces supporting operational flows are identified.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "O9",
+                             "name":  "Operational context exists",
+                             "family":  "OpsCon",
+                             "expected":  "mandatory",
+                             "forbidden":  false,
+                             "weight":  5,
+                             "description":  "Future operational conditions, external systems and operating environment are described.",
+                             "evidence_keywords":  [
+                                                       "operational context",
+                                                       "external system",
+                                                       "physical environment",
+                                                       "weather",
+                                                       "geography",
+                                                       "electromagnetic",
+                                                       "operating condition"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Under which conditions do operations occur?"
+                                                      ],
+                             "type":  "mandatory",
+                             "expected_for_conops":  "not_applicable",
+                             "expected_for_opscon":  "mandatory",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "Future operational conditions, external systems and operating environment are described.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "O10",
+                             "name":  "Governance exists",
+                             "family":  "OpsCon",
+                             "expected":  "recommended",
+                             "forbidden":  false,
+                             "weight":  3,
+                             "description":  "Authority, coordination, arbitration and resource allocation mechanisms are identified.",
+                             "evidence_keywords":  [
+                                                       "governance",
+                                                       "decision maker",
+                                                       "coordination mechanism",
+                                                       "authority",
+                                                       "arbitration",
+                                                       "resource allocation",
+                                                       "conflict resolution"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Who decides and coordinates?",
+                                                          "Who resolves operational conflicts?"
+                                                      ],
+                             "type":  "recommended",
+                             "expected_for_conops":  "not_applicable",
+                             "expected_for_opscon":  "recommended",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "Authority, coordination, arbitration and resource allocation mechanisms are identified.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "O11",
+                             "name":  "Operational dependencies exist",
+                             "family":  "OpsCon",
+                             "expected":  "recommended",
+                             "forbidden":  false,
+                             "weight":  3,
+                             "description":  "Dependencies among services, systems and actors are described with criticality when available.",
+                             "evidence_keywords":  [
+                                                       "operational dependency",
+                                                       "depends on",
+                                                       "dependency between",
+                                                       "critical dependency",
+                                                       "single point of failure"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Which constituent depends on another?",
+                                                          "What happens if the dependency fails?"
+                                                      ],
+                             "type":  "recommended",
+                             "expected_for_conops":  "not_applicable",
+                             "expected_for_opscon":  "recommended",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "Dependencies among services, systems and actors are described with criticality when available.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "O12",
+                             "name":  "Traceability to originating ConOps exists",
+                             "family":  "OpsCon",
+                             "expected":  "recommended",
+                             "forbidden":  false,
+                             "weight":  4,
+                             "description":  "Services, outcomes and constraints trace back to originating ConOps needs; value chain traceability may be explicit.",
+                             "evidence_keywords":  [
+                                                       "traced conops need",
+                                                       "traces to conops",
+                                                       "originating conops",
+                                                       "delivered service",
+                                                       "benefiting actor",
+                                                       "value chain traceability",
+                                                       "transaction type"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Which ConOps need does each service address?",
+                                                          "Is traceability complete from need to service?"
+                                                      ],
+                             "type":  "recommended",
+                             "expected_for_conops":  "not_applicable",
+                             "expected_for_opscon":  "recommended",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "Services, outcomes and constraints trace back to originating ConOps needs; value chain traceability may be explicit.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "O13",
+                             "name":  "Operational ownership exists",
+                             "family":  "OpsCon",
+                             "expected":  "recommended",
+                             "forbidden":  false,
+                             "weight":  3,
+                             "description":  "Operational responsibilities and ownership are assigned; Promoter, Partner, Supplier or Alliance roles may be identified.",
+                             "evidence_keywords":  [
+                                                       "operational ownership",
+                                                       "responsible actor",
+                                                       "promoter",
+                                                       "partner",
+                                                       "supplier",
+                                                       "alliance",
+                                                       "responsibility assignment"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Who owns each operational responsibility?"
+                                                      ],
+                             "type":  "recommended",
+                             "expected_for_conops":  "not_applicable",
+                             "expected_for_opscon":  "recommended",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "Operational responsibilities and ownership are assigned; Promoter, Partner, Supplier or Alliance roles may be identified.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         },
+                         {
+                             "id":  "O14",
+                             "name":  "Operational modes exist",
+                             "family":  "OpsCon",
+                             "expected":  "recommended",
+                             "forbidden":  false,
+                             "weight":  3,
+                             "description":  "Nominal, degraded, emergency or maintenance modes are described.",
+                             "evidence_keywords":  [
+                                                       "nominal mode",
+                                                       "degraded mode",
+                                                       "emergency mode",
+                                                       "maintenance mode",
+                                                       "operational mode"
+                                                   ],
+                             "evaluation_questions":  [
+                                                          "Which operational modes are defined?"
+                                                      ],
+                             "type":  "recommended",
+                             "expected_for_conops":  "not_applicable",
+                             "expected_for_opscon":  "recommended",
+                             "forbidden_elements":  [
+
+                                                    ],
+                             "purpose":  "Nominal, degraded, emergency or maintenance modes are described.",
+                             "penalty_logic":  "present=+weight; missing=-alpha*weight"
+                         }
+                     ],
+    "classification_policy":  {
+                                  "conops_question":  "Why should the future operational world be different?",
+                                  "opscon_question":  "How will the future operational system-of-systems operate?",
+                                  "high_score_threshold":  60,
+                                  "minimum_score_threshold":  35,
+                                  "hybrid_rule":  "Both normalized family scores are at or above the high score threshold.",
+                                  "neither_rule":  "Both normalized family scores are below the minimum score threshold."
+                              },
+    "forbidden_content_quick_check":  [
+                                          {
+                                              "element":  "stakeholder needs",
+                                              "conops":  "required",
+                                              "opscon":  "may reference"
+                                          },
+                                          {
+                                              "element":  "future services user perspective",
+                                              "conops":  "required",
+                                              "opscon":  "required operationally"
+                                          },
+                                          {
+                                              "element":  "system boundary",
+                                              "conops":  "forbidden",
+                                              "opscon":  "required"
+                                          },
+                                          {
+                                              "element":  "interface specification",
+                                              "conops":  "forbidden",
+                                              "opscon":  "required"
+                                          },
+                                          {
+                                              "element":  "capability allocation",
+                                              "conops":  "forbidden",
+                                              "opscon":  "required"
+                                          },
+                                          {
+                                              "element":  "SLA or KPI values",
+                                              "conops":  "forbidden",
+                                              "opscon":  "expected"
+                                          },
+                                          {
+                                              "element":  "make-or-buy decisions",
+                                              "conops":  "forbidden",
+                                              "opscon":  "expected"
+                                          },
+                                          {
+                                              "element":  "governance mechanisms",
+                                              "conops":  "forbidden",
+                                              "opscon":  "expected"
+                                          },
+                                          {
+                                              "element":  "executable operational scenarios",
+                                              "conops":  "forbidden",
+                                              "opscon":  "required"
+                                          },
+                                          {
+                                              "element":  "MEI_flow nature",
+                                              "conops":  "not required",
+                                              "opscon":  "required"
+                                          },
+                                          {
+                                              "element":  "promoter identity",
+                                              "conops":  "not required",
+                                              "opscon":  "expected"
+                                          },
+                                          {
+                                              "element":  "value criteria",
+                                              "conops":  "stakeholder-specific only",
+                                              "opscon":  "traceable through value chain"
+                                          },
+                                          {
+                                              "element":  "capability gap high-level",
+                                              "conops":  "recommended",
+                                              "opscon":  "not required"
+                                          }
+                                      ]
+}
