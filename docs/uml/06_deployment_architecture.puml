@@ -1,0 +1,83 @@
+@startuml
+title Architecture de deploiement locale
+
+cloud "GitHub Repository" as GitHub {
+  artifact "README_DEMARRAGE.md" as Readme
+  artifact "requirements.txt" as Requirements
+  artifact "requirements_finetuning.txt" as FTRequirements
+  artifact ".env.example" as EnvExample
+  artifact "docs/uml/" as UMLDocs
+}
+
+node "PC utilisateur Windows" {
+  node "VS Code" {
+    artifact "Projet Python\nconops_ai_platform_v2" as Code
+    artifact ".env local\nnon versionne" as Env
+  }
+  node "Python .venv" {
+    component "Streamlit\napp.py" as Streamlit
+    component "Pipeline\nsrc/" as Pipeline
+  }
+  database "data/" {
+    artifact "rules/conops_opscon_rules_v3.json" as Rules
+    artifact "reference_docs/*.pdf" as References
+    artifact "gold_standards/*.json" as Gold
+  }
+  database "outputs/run_id/\ngenere localement\nnon versionne GitHub" {
+    artifact "experiments_summary.csv" as Summary
+    artifact "rule_assessment_detailed.csv" as RuleCSV
+    artifact "rag_chunks_used.csv" as RagCSV
+    artifact "reports Markdown / JSON" as Reports
+    artifact "models .sysml" as SysML
+    artifact "graphes HTML" as Graphs
+    artifact "expert_validation.csv" as Validation
+    artifact "scientific_report.md\nsection_classification.csv" as ScientificOutputs
+    artifact "sysml_graph_*.html\ntraceability_edges.csv" as SysMLGraphOutputs
+  }
+  node "Ollama local" {
+    component "Modeles locaux" as Ollama
+  }
+  database "models/" {
+    artifact "conops-lora/\nnon pousse sur GitHub\nsauf Git LFS ou telechargement separe" as Lora
+    artifact "model_registry.json\nconditionnel" as Registry
+  }
+  cloud "OpenAI API\noptionnelle" as OpenAI
+  node "Index vectoriel local" {
+    database "ChromaDB persistent\ndata/chroma_db" as Index
+  }
+}
+
+GitHub --> Code : clone / pull
+EnvExample --> Env : copie locale
+Requirements --> Pipeline : dependances principales
+FTRequirements --> Lora : dependances optionnelles
+Code --> Streamlit
+Streamlit --> Pipeline
+Pipeline --> Rules
+Pipeline --> References
+Pipeline --> Gold
+Pipeline --> Index
+Pipeline --> Ollama
+Pipeline --> Lora : C6/C7 si disponible
+Registry --> Pipeline
+Pipeline --> OpenAI
+Pipeline --> Summary
+Pipeline --> RuleCSV
+Pipeline --> RagCSV
+Pipeline --> Reports
+Pipeline --> SysML
+Pipeline --> Graphs
+Pipeline --> ScientificOutputs
+Pipeline --> SysMLGraphOutputs
+Streamlit --> Validation
+
+note bottom
+Chaque execution est tracee par run_id et hashes.
+La validation SysML actuelle est heuristique.
+Les resultats restent soumis a validation humaine.
+Le fichier .env et les cles API ne sont pas envoyes sur GitHub.
+outputs/run_id/ est genere localement et non versionne.
+models/conops-lora/ n'est pas pousse sur GitHub,
+sauf via Git LFS ou un telechargement separe.
+end note
+@enduml

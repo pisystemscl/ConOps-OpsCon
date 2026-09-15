@@ -1,0 +1,153 @@
+@startuml
+title Architecture globale - Plateforme d'analyse ConOps/OpsCon
+top to bottom direction
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Utilisateur / Expert metier" as Expert
+
+package "Interface" {
+  [app.py\nStreamlit UI] as UI
+}
+
+package "Entrees et connaissances" {
+  [PDF a analyser] as TargetPDF
+  [PDF de reference] as RefPDF
+  [Regles officielles V3.0\nD1/D2, C1-C14, O1-O14, O6a] as RulesJSON
+  [Connaissance K1 / K2 / K3] as Knowledge
+  [Gold standard manuel] as Gold
+}
+
+package "Preparation documentaire et RAG" {
+  [pdf_loader.py\ntext_splitter.py] as Ingestion
+  [section_classifier.py\nsections ConOps/OpsCon] as SectionClassifier
+  [embeddings.py\nall-MiniLM-L6-v2] as Embeddings
+  [chroma_store.py\nPersistentClient] as Index
+  [rag_engine.py\nchunks source/page/score\nrule-aware retrieval] as RAG
+}
+
+package "Regles metier" {
+  [rules_loader.py\nvalidate_rules_integrity()] as RulesLoader
+  [rule_repository.py\nRulesRepository] as RuleRepo
+  [rule_based_evaluator.py\n+W / -alpha W / -beta W] as RuleEvaluator
+}
+
+package "Pipeline principal" {
+  [experiment_runner.py\nC1 / C3 / C4 / C5\nC6 / C7 conditionnels] as Runner
+  [batch_document_runner.py\nmulti-documents] as BatchRunner
+  [prompts.py\nPromptBuilder] as Prompt
+  [providers.py\nOllama principal\nOpenAI optionnel\nheuristique locale] as Provider
+  [fine_tuned_provider.py\nFineTunedLLM + readiness] as FineProvider
+  [extractor.py\nJSON structure] as Extractor
+  [json_repair.py\nreparation JSON conservative] as JSONRepair
+  [json_guard.py\nschema guard + repair] as JSONGuard
+  [post_processor.py\nAnalysis JSON validee] as Analysis
+  [interface_extractor.py\ninterfaces structurees] as InterfaceExtractor
+  [requirement_cleaner.py\nflags exigences] as RequirementCleaner
+  [evaluator.py\nQuality decision] as Quality
+}
+
+package "Generation et tracabilite" {
+  [sysml_generator.py] as SysML
+  [sysml_graph_generator.py\ntraceability exports] as SysMLGraph
+  [graph_generator.py] as Graph
+  [report_writer.py / exporter.py] as Export
+  [scientific_summary.py\nscientific report] as ScientificSummary
+  [CSV / JSON / Markdown\nSysML / HTML / validation expert] as Outputs
+}
+
+package "Evaluation scientifique" {
+  [baseline_gain.py\ngain vs C1] as BaselineGain
+  [scientific_metrics.py\nmetrics panel] as ScientificMetrics
+  [classification_explainer.py\nconfiguration_explainer.py] as Explainers
+  [section_classifier.py\nsection CSV] as SectionEval
+  [repetition_analyzer.py\nstabilite repetitions] as RepetitionAnalyzer
+}
+
+package "Fine-tuning conditionnel\nOption experimentale C6/C7" {
+  [dataset_builder.py\nfine_tuning_seed.jsonl] as Dataset
+  [train_lora.py] as Trainer
+  [LoRA adapter + registry\nconditionnels] as FineTuned
+}
+
+Expert --> UI
+UI --> TargetPDF
+UI --> RefPDF
+UI --> Runner
+UI --> BatchRunner
+
+TargetPDF --> Ingestion
+RefPDF --> Ingestion
+Ingestion --> SectionClassifier : texte cible
+Ingestion --> Embeddings : references
+Embeddings --> Index : vecteurs + metadonnees
+Index --> RAG : construire / charger index
+Ingestion --> Runner : texte cible + pages
+
+RulesJSON --> RulesLoader
+RulesLoader --> RuleRepo
+RulesLoader --> Prompt : contexte officiel
+RulesLoader --> RuleEvaluator
+Knowledge --> Prompt
+RAG --> Prompt
+Gold --> Quality
+Gold --> ScientificMetrics
+
+Runner --> Prompt
+BatchRunner --> Runner
+Prompt --> Provider
+FineProvider --> Provider : C6/C7 si pret
+Provider --> Extractor : le LLM extrait
+Extractor --> JSONRepair : JSON brut ou incomplet
+Extractor --> JSONGuard : controle schema
+JSONRepair --> JSONGuard : JSON repare
+JSONGuard --> Analysis : JSON valide
+Analysis --> RequirementCleaner
+Analysis --> InterfaceExtractor
+Analysis --> RuleEvaluator
+RuleEvaluator --> Quality : Python evalue
+Quality --> ScientificMetrics
+
+Analysis --> SysML : elements valides
+Analysis --> SysMLGraph
+Analysis --> Graph : elements valides
+Quality --> SysML : autorisation
+Quality --> Graph : autorisation
+Quality --> Export
+ScientificMetrics --> Export
+BaselineGain --> Export
+Explainers --> Export
+SectionEval --> Export
+RepetitionAnalyzer --> Export
+SysML --> Outputs
+SysMLGraph --> Outputs
+Graph --> Outputs
+Export --> Outputs
+ScientificSummary --> Outputs
+Outputs --> UI
+
+Dataset --> Trainer
+Trainer --> FineTuned
+FineTuned --> FineProvider : adapter LoRA valide
+FineTuned --> Runner : selection experimentale
+
+note right of RulesLoader
+Erreur explicite si une regle officielle manque.
+Les regles servent a classifier, evaluer,
+guider le RAG et la generation,
+et estimer la confiance.
+end note
+
+note right of RuleEvaluator
+Le LLM extrait.
+Python evalue deterministement.
+System-of-Systems : OpsCon uniquement.
+Aucun concept generique Value.
+end note
+
+note bottom of FineTuned
+Fine-tuning active uniquement avec
+dataset suffisant et validation experte.
+end note
+@enduml

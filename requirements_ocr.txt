@@ -1,0 +1,4 @@
+pymupdf==1.27.2.3
+rapidocr_onnxruntime==1.4.4
+opencv-python==4.10.0.84
+numpy==1.26.4

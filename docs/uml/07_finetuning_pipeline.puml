@@ -1,0 +1,70 @@
+@startuml
+title Pipeline fine-tuning - Activation conditionnelle C6 et C7
+skinparam componentStyle rectangle
+skinparam shadowing false
+
+actor "Expert metier" as Expert
+
+package "Donnees d'apprentissage" {
+  [PDF ConOps / OpsCon annotes] as Docs
+  [Gold standards JSON] as Gold
+  [expert_validation.csv] as ExpertCSV
+}
+package "Construction dataset" {
+  [dataset_builder.py] as DatasetBuilder
+  [QualityFilter\nconditionnel] as QualityFilter
+  [Split train / validation] as Split
+  [train_dataset.jsonl] as TrainJSONL
+  [validation_dataset.jsonl] as ValidationJSONL
+}
+package "Entrainement LoRA" {
+  [train_lora.py] as Trainer
+  [Base model\nMistral / Llama / Qwen] as BaseModel
+  [LoRA adapter\nmodels/conops-lora] as Lora
+}
+package "Registre modeles" {
+  [model_registry.json\nconditionnel] as Registry
+  [fine_tuned_provider.py\nreadiness checks] as FineTunedProvider
+}
+package "Evaluation apres entrainement" {
+  [experiment_runner.py] as Runner
+  [C6 = fine-tuned model] as C6
+  [C7 = fine-tuned model + RAG] as C7
+  [precision, recall, F1,\ngrounding, stabilite] as Metrics
+}
+
+Expert --> ExpertCSV : validation / correction
+Docs --> DatasetBuilder
+Gold --> DatasetBuilder
+ExpertCSV --> DatasetBuilder
+DatasetBuilder --> QualityFilter
+QualityFilter --> Split
+Split --> TrainJSONL
+Split --> ValidationJSONL
+TrainJSONL --> Trainer
+ValidationJSONL --> Trainer : eval_dataset
+BaseModel --> Trainer
+Trainer --> Lora
+Lora --> Registry
+Registry --> FineTunedProvider
+FineTunedProvider --> Runner
+Runner --> C6
+Runner --> C7
+C6 --> Metrics
+C7 --> Metrics
+ValidationJSONL --> Metrics : evaluation hors entrainement
+
+note right of Trainer
+Le pipeline s'active avec un adaptateur valide.
+Un entrainement exploitable exige un dataset
+suffisant, annote et valide par expert.
+Le split train/validation limite le risque
+de mesurer uniquement la memorisation.
+end note
+
+note bottom
+C6 : modele fine-tune sans RAG.
+C7 : modele fine-tune avec RAG.
+Comparaison avec C1, C3, C4 et C5.
+end note
+@enduml

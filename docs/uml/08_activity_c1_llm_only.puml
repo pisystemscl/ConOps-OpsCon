@@ -1,0 +1,89 @@
+@startuml
+title Configuration C1 - LLM seul
+
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam linetype polyline
+skinparam nodesep 60
+skinparam ranksep 75
+skinparam defaultFontName Arial
+skinparam defaultFontSize 15
+skinparam defaultTextAlignment center
+skinparam TitleFontSize 25
+skinparam TitleFontStyle bold
+skinparam TitleFontColor #0F172A
+skinparam ArrowColor #475569
+skinparam ArrowThickness 2
+skinparam ArrowFontName Arial
+skinparam ArrowFontSize 12
+skinparam ArrowFontColor #334155
+skinparam ArrowFontBackgroundColor #F8FAFC
+skinparam interfaceBackgroundColor #FFFFFF
+skinparam interfaceBorderColor #64748B
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #475569
+  FontColor #0F172A
+  FontSize 15
+  FontStyle plain
+  BorderThickness 2
+}
+skinparam legend {
+  BackgroundColor #FFFFFF
+  BorderColor #CBD5E1
+  FontColor #334155
+  FontSize 13
+}
+
+<style>
+  element {
+    Padding 12
+    Margin 5
+  }
+  arrow {
+    FontSize 12
+    FontColor #334155
+    LineColor #475569
+    LineThickness 2
+  }
+  legend {
+    Padding 12
+    Margin 10
+  }
+</style>
+
+() " " as IN1
+() " " as IN2
+() " " as IN3
+
+rectangle "<b>EXTRAIRE LE TEXTE</b>\n\nLecture du document\nOCR si necessaire" as A #E0F2FE
+
+rectangle "<b>GENERER L'ANALYSE DU DOCUMENT</b>\n\nTraitement par le LLM local\navec Ollama" as B #EDE9FE
+
+rectangle "<b>VALIDER LE SCHEMA JSON</b>\n\nControle de la structure\nReparation si necessaire" as C #FEF3C7
+
+rectangle "<b>EXPORTER LES RESULTATS</b>\n\nGeneration des livrables" as D #DCFCE7
+
+() "JSON" as JSON
+() "CSV" as CSV
+() "SysML" as SYSML
+
+IN1 --> A : PDF ConOps\nbrut
+IN2 --> A : PDF OpsCon\nbrut
+IN3 --> A : Document depose\n+ metadonnees
+A --> B : Texte extrait / OCR\npages conservees
+B --> C : Analyse JSON brute\nrubriques et preuves
+C --> D : JSON valide et repare\nconforme au schema
+D --> JSON : Analyse structuree\nscores et preuves
+D --> CSV : Resultats tabulaires
+D --> SYSML : Modele SysML
+
+legend bottom
+  <b>C1 - LLM seul</b>
+  <back:#E0F2FE> Extraction </back>  <back:#EDE9FE> LLM </back>  <back:#FEF3C7> Validation </back>  <back:#DCFCE7> Export </back>
+  Rectangles = traitements | Fleches = informations transmises
+endlegend
+
+@enduml

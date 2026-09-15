@@ -1,0 +1,73 @@
+@startuml
+title Activite experimentale - Isolation des variables
+start
+:Charger PDF cible et references;
+:Charger et valider les regles V3.0;
+:Classifier les sections du document;
+:Choisir le mode experimental;
+
+if (Plusieurs documents ?) then (oui)
+  :Creer un batch_run_id;
+  :Executer le meme protocole\nsur chaque document;
+  :Agreger moyenne, ecart-type\net stabilite par configuration;
+else (non)
+endif
+
+if (Mode ?) then (strategies)
+  :Fixer le modele;
+  :Comparer C1, C3, C4, C5;
+  if (Adapter fine-tune valide disponible ?) then (oui)
+    :Ajouter C6 = fine-tune;\nC7 = fine-tune + RAG;
+  else (non)
+    :Marquer C6/C7 comme prepares,\nnon executes;
+  endif
+elseif (modeles)
+  :Fixer la strategie;
+  :Comparer les modeles LLM;
+else (connaissance)
+  :Fixer modele et strategie;
+  :Comparer K1, K2, K3;
+endif
+
+:Creer run_id, document_hash,\nconfig_hash et prompt_hash;
+:Definir repeat_count;
+:Afficher protocole, hypotheses,\nvariables controlees et limites;
+repeat
+  :Extraire le texte page par page;
+  if (RAG actif ?) then (oui)
+    :Recuperer chunks top-k;
+    :Recuperer aussi les chunks lies\naux regles officielles;
+    :Conserver source, page et score;
+  endif
+  if (Regles actives ?) then (oui)
+    :Injecter D1/D2, C1-C14,\nO1-O14 et O6a;
+  endif
+  if (Connaissance active ?) then (oui)
+    :Injecter K1, K2 ou K3;
+  endif
+  :Construire le prompt;
+  :Appeler le LLM;
+  :Parser, reparer et garder\nle JSON par schema;
+  :Nettoyer les exigences et\nvalider les interfaces;
+  :Appliquer l'evaluation deterministe;
+  :Calculer grounding, qualite et revue humaine;
+repeat while (repetitions restantes ?) is (oui)
+
+:Calculer moyenne, ecart-type et stabilite;
+:Analyser ablations C3/C4/C5\net hypotheses H1-H6;
+:Calculer gain par rapport a C1;
+if (Gold standard charge ?) then (oui)
+  :Calculer precision, recall, F1,\nclassification et accord des regles;
+endif
+:Choisir la meilleure configuration;
+if (Resultat exploitable ?) then (oui)
+  :Generer SysML v2 et graphes;
+  :Exporter traceability edges\net graph metrics;
+else (non)
+  :Marquer pour revue humaine;
+endif
+:Exporter CSV, JSON, Markdown,\nHTML, PNG et ZIP;
+:Enregistrer la validation expert;
+:Mettre a jour le gold standard\napres validation humaine;
+stop
+@enduml

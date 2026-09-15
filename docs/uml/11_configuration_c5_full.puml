@@ -1,0 +1,99 @@
+@startuml
+title Configuration C5 - Architecture LLM + regles + RAG + evaluateur
+
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam linetype polyline
+skinparam nodesep 60
+skinparam ranksep 75
+skinparam defaultFontName Arial
+skinparam defaultFontSize 15
+skinparam defaultTextAlignment center
+skinparam TitleFontSize 25
+skinparam TitleFontStyle bold
+skinparam TitleFontColor #0F172A
+skinparam ArrowColor #475569
+skinparam ArrowThickness 2
+skinparam ArrowFontName Arial
+skinparam ArrowFontSize 12
+skinparam ArrowFontColor #334155
+skinparam ArrowFontBackgroundColor #F8FAFC
+skinparam interfaceBackgroundColor #FFFFFF
+skinparam interfaceBorderColor #64748B
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #475569
+  FontColor #0F172A
+  FontSize 15
+  FontStyle plain
+  BorderThickness 2
+}
+skinparam legend {
+  BackgroundColor #FFFFFF
+  BorderColor #CBD5E1
+  FontColor #334155
+  FontSize 13
+}
+
+<style>
+  element {
+    Padding 12
+    Margin 5
+  }
+  arrow {
+    FontSize 12
+    FontColor #334155
+    LineColor #475569
+    LineThickness 2
+  }
+  legend {
+    Padding 12
+    Margin 10
+  }
+</style>
+
+() " " as IN1
+() " " as IN2
+() " " as IN3
+() " " as RULES1
+() " " as RULES2
+() " " as TEMPLATE
+
+rectangle "<b>EXTRAIRE LES TEXTES</b>\n\nLecture page par page\nOCR des pages numerisees\nConservation des sources et pages" as A #E0F2FE
+rectangle "<b>APPLIQUER LES REGLES</b>\n\nDistinction ConOps / OpsCon\nDetection des regles presentes,\nabsentes ou interdites" as B #FFF8E1
+rectangle "<b>CONSTRUIRE LE CONTEXTE RAG</b>\n\nDecoupage et embeddings\nIndexation dans Chroma\nRecherche des passages pertinents" as C #E0F2FE
+rectangle "<b>GENERER L'ANALYSE DU DOCUMENT</b>\n\nConstruction du prompt C5 enrichi\nPremier appel a Ollama\nExtraction des rubriques et preuves" as D #EDE9FE
+rectangle "<b>VALIDER LE SCHEMA JSON</b>\n\nValidation ConOpsAnalysis\nControle des champs obligatoires\nReparation si necessaire" as E #FEF3C7
+rectangle "<b>EFFECTUER L'EVALUATION HYBRIDE</b>\n\nScores deterministes avec Python\nControle des regles et du grounding\nSecond appel au LLM evaluateur" as F #ECFDF5
+rectangle "<b>EXPORTER LES RESULTATS</b>\n\nClassification et score final\nVerdict et recommandations\nGeneration des livrables" as G #DCFCE7
+
+() "JSON" as JSON
+() "CSV" as CSV
+() "SysML" as SYSML
+
+IN1 --> A : PDF cible\nConOps / OpsCon
+IN2 --> A : Reference\nConOps
+IN3 --> A : Reference\nOpsCon
+A --> B : Textes extraits / OCR\nsources et pages
+RULES1 --> B : D1/D2 et C1-C14
+RULES2 --> B : O1-O14 et O6a
+B --> C : Texte annote\nstatut des regles
+C --> D : Passages RAG\nsource, page, similarite
+TEMPLATE --> D : Prompt C5\nformat JSON attendu
+D --> E : Analyse JSON brute\nrubriques, preuves, citations
+E --> F : JSON valide et repare\nconforme a ConOpsAnalysis
+F --> G : Evaluation Python + LLM\nscores, verdict, recommandations
+G --> JSON : Rapport complet\npreuves et tracabilite
+G --> CSV : Mesures et scores
+G --> SYSML : Modele SysML
+
+legend bottom
+  <b>C5 - Regles + RAG + evaluation hybride Python / LLM</b>
+  <back:#E0F2FE> Extraction / RAG </back>  <back:#FFF8E1> Regles </back>  <back:#EDE9FE> LLM </back>
+  <back:#FEF3C7> Validation </back>  <back:#ECFDF5> Evaluation </back>  <back:#DCFCE7> Export </back>
+  Rectangles = traitements | Fleches = informations transmises
+endlegend
+
+@enduml

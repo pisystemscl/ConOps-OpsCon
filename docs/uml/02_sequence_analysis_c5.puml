@@ -1,0 +1,118 @@
+@startuml
+title Sequence detaillee - C5 : LLM + regles + RAG + evaluateur
+
+actor "Utilisateur / Expert" as User
+participant "app.py\nStreamlit" as UI
+participant "ExperimentRunner" as Runner
+participant "PDFLoader" as PDF
+participant "SectionClassifier" as Sections
+participant "RAGEngine" as RAG
+participant "RulesLoader" as Rules
+participant "OntologyBuilder" as Ontology
+participant "PromptBuilder" as Prompt
+participant "LLMProvider" as LLM
+participant "JsonGuard" as Guard
+participant "Extractor" as Extractor
+participant "PostProcessor" as Post
+participant "RequirementCleaner" as Cleaner
+participant "InterfaceExtractor" as Interfaces
+participant "RuleBasedEvaluator" as RuleEval
+participant "QualityEvaluator" as Quality
+participant "SemanticEvaluator" as Semantic
+participant "GoldStandardEvaluator" as Gold
+participant "ScientificMetrics" as Metrics
+participant "SysMLGraphGenerator" as SysMLGraph
+participant "SysMLGenerator" as SysML
+participant "GraphGenerator" as Graph
+participant "ReportWriter / Exporter" as Export
+
+User -> UI : upload PDF et references\nselection C5, modele, repetitions
+UI -> Runner : run_strategy_comparison(...)
+Runner -> PDF : extract_pdf_text()
+PDF --> Runner : texte + pages
+Runner -> Sections : classify_sections(document_text)
+Sections --> Runner : sections + dominante ConOps/OpsCon
+Runner -> RAG : build_or_load_index(reference_pdfs)
+RAG -> PDF : extraction des references
+RAG -> RAG : chunking + embeddings\n+ vector store
+RAG --> Runner : index RAG pret
+
+loop repeat_count
+  note over Runner,LLM
+  Repete N fois pour mesurer
+  la stabilite du LLM.
+  end note
+  Runner -> RAG : retrieve(top_k)
+  RAG --> Runner : chunks {source, page, score, text,\nused_in_prompt, used_in_answer}
+  Runner -> Rules : load_rules() + validate_rules_integrity()
+  Rules --> Runner : contexte V3.0
+  Runner -> Ontology : build_knowledge_context(K1/K2/K3)
+  Ontology --> Runner : contexte metier
+  Runner -> Prompt : build_extraction_prompt()
+  note right of Prompt
+  Interdiction d'inventer.
+  Preuve courte obligatoire.
+  JSON valide obligatoire.
+  SoS uniquement OpsCon.
+  end note
+  Prompt --> Runner : prompt final
+  Runner -> LLM : generate(temperature=0)
+  alt timeout ou erreur LLM
+    LLM --> Runner : erreur
+    Runner -> Runner : marquer la configuration failed
+  else reponse recue
+    LLM --> Runner : reponse brute
+    Runner -> Extractor : parse JSON
+    alt JSON invalide
+      Extractor -> Extractor : repair_json()
+    end
+    Extractor -> Guard : schema guard / repair once
+    Guard --> Extractor : JSON conforme
+    Extractor --> Runner : ConOpsAnalysis
+  end
+  Runner -> Post : normaliser et attacher les preuves
+  Post -> Cleaner : reformuler exigences + flags
+  Cleaner --> Post : exigences concises et tracables
+  Post -> Interfaces : enrichir interfaces structurees
+  Interfaces --> Post : source, cible, flux, trigger, page
+  Post --> Runner : analyse structuree
+  Runner -> RuleEval : evaluate_document_rules()
+  RuleEval --> Runner : scores, classification, details
+  note right of RuleEval
+  Le LLM extrait.
+  Python evalue avec +W,
+  -alpha W et -beta W.
+  end note
+  Runner -> Quality : evaluate()
+  Quality --> Runner : score final et revue humaine
+  Runner -> Semantic : grounding et couverture
+  Semantic --> Runner : metriques traceabilite
+  Runner -> Metrics : precision, recall, f1,\nretrieval et stabilite
+  Metrics --> Runner : mesures scientifiques
+end
+
+Runner -> Runner : moyenne, ecart-type, stabilite
+Runner -> Runner : gain_vs_C1 + metriques RAG
+opt gold standard manuel charge
+  Runner -> Gold : comparer extraction, classification et regles
+  Gold --> Runner : precision, recall, F1,\nmanquants et extras
+end
+Runner -> SysML : generate_sysml_v2(best_analysis)
+SysML --> Runner : model.sysml
+Runner -> SysMLGraph : save_sysml_graph(best_analysis)
+SysMLGraph --> Runner : graphes SysML + traceability CSV
+Runner -> Graph : graphes 2D / 3D
+Graph --> Runner : fichiers HTML
+Runner -> Export : CSV, JSON, Markdown, ZIP
+Export --> UI : fichiers du run
+UI --> User : scores, preuves, regles et modeles
+User -> UI : validation expert
+UI -> Export : expert_validation.csv
+
+note bottom
+C1 : sans regles, sans RAG, sans evaluateur LLM.
+C3 : regles activees.
+C4 : RAG active.
+C5 : regles + RAG + evaluateur.
+end note
+@enduml

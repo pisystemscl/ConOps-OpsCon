@@ -1,0 +1,79 @@
+@startuml
+title Modele conceptuel metier - ConOps et OpsCon
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+package "ConOps - Problem Space" {
+  class ProblemSpace
+  class CurrentSituation
+  class Stakeholder
+  class StakeholderNeed
+  StakeholderNeed : value_criteria [0..*]
+  class ExpectedOutcome
+  class OperationalEnvironment
+  class ChangeDriver
+  class FutureService {
+    black_box = true
+  }
+  class CapabilityGap
+  class FutureCapability {
+    solution_independent = true
+  }
+  class FutureSolutionConstraint
+  class SharedFutureVision
+  class OpportunityArea
+}
+package "OpsCon - Solution Space" {
+  class SolutionSpace
+  class FutureOperationalSoS
+  class SoSBoundary
+  class ConstituentSystem
+  class PromoterSystemOfInterest
+  class OperationalService
+  class OperationalScenario
+  class OperationalFlow
+  class Interface
+  class Governance
+  class OperationalDependency
+  class OperationalOwnership
+  class OperationalMode
+}
+
+ProblemSpace --> CurrentSituation : describes
+ProblemSpace --> OperationalEnvironment : considers
+Stakeholder --> StakeholderNeed : expresses
+StakeholderNeed --> ExpectedOutcome : leads to
+ChangeDriver --> FutureService : justifies
+CapabilityGap --> FutureCapability : motivates
+FutureSolutionConstraint --> SolutionSpace : constrains
+OpportunityArea --> SolutionSpace : may generate
+SharedFutureVision --> Stakeholder : aligns
+
+SolutionSpace --> FutureOperationalSoS : describes
+FutureOperationalSoS --> SoSBoundary : has
+FutureOperationalSoS --> ConstituentSystem : composed of
+FutureOperationalSoS --> PromoterSystemOfInterest : identifies
+ConstituentSystem --> OperationalService : realizes
+OperationalScenario --> OperationalFlow : contains
+Interface --> OperationalFlow : supports
+Governance --> ConstituentSystem : coordinates
+OperationalDependency --> ConstituentSystem : links
+OperationalOwnership --> OperationalService : assigns
+OperationalMode --> OperationalScenario : contextualizes
+OperationalService ..> StakeholderNeed : traceability only
+
+note top of ProblemSpace
+ConOps repond :
+Why should the future operational world be different?
+end note
+note top of SolutionSpace
+OpsCon repond :
+How will the future operational System-of-Systems operate?
+end note
+note bottom
+System-of-Systems appartient uniquement a OpsCon.
+Aucun concept generique Value n'est modele.
+La trace OpsCon vers ConOps n'implique pas
+la couverture obligatoire de tous les besoins.
+end note
+@enduml

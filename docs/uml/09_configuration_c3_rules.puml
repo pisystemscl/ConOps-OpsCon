@@ -1,0 +1,97 @@
+@startuml
+title Configuration C3 - Architecture LLM + regles ConOps / OpsCon
+
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam linetype polyline
+skinparam nodesep 60
+skinparam ranksep 75
+skinparam defaultFontName Arial
+skinparam defaultFontSize 15
+skinparam defaultTextAlignment center
+skinparam TitleFontSize 25
+skinparam TitleFontStyle bold
+skinparam TitleFontColor #0F172A
+skinparam ArrowColor #475569
+skinparam ArrowThickness 2
+skinparam ArrowFontName Arial
+skinparam ArrowFontSize 12
+skinparam ArrowFontColor #334155
+skinparam ArrowFontBackgroundColor #F8FAFC
+skinparam interfaceBackgroundColor #FFFFFF
+skinparam interfaceBorderColor #64748B
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #475569
+  FontColor #0F172A
+  FontSize 15
+  FontStyle plain
+  BorderThickness 2
+}
+skinparam legend {
+  BackgroundColor #FFFFFF
+  BorderColor #CBD5E1
+  FontColor #334155
+  FontSize 13
+}
+
+<style>
+  element {
+    Padding 12
+    Margin 5
+  }
+  arrow {
+    FontSize 12
+    FontColor #334155
+    LineColor #475569
+    LineThickness 2
+  }
+  legend {
+    Padding 12
+    Margin 10
+  }
+</style>
+
+() " " as IN1
+() " " as IN2
+() " " as IN3
+() " " as RULES1
+() " " as RULES2
+() " " as TEMPLATE
+
+rectangle "<b>EXTRAIRE LE TEXTE</b>\n\nLecture page par page\nOCR des pages numerisees\nConservation du numero de page" as A #E0F2FE
+rectangle "<b>APPLIQUER LES REGLES</b>\n\nDistinction ConOps / OpsCon\nDetection des regles presentes,\nabsentes ou interdites" as B #FFF8E1
+rectangle "<b>GENERER L'ANALYSE DU DOCUMENT</b>\n\nConstruction du prompt C3\nExtraction des rubriques et preuves\nTraitement par Ollama" as C #EDE9FE
+rectangle "<b>VALIDER LE SCHEMA JSON</b>\n\nValidation ConOpsAnalysis\nControle des champs obligatoires\nReparation si necessaire" as D #FEF3C7
+rectangle "<b>EVALUER LA CONFORMITE</b>\n\nCalcul deterministe avec Python\nClassification et penalites\nScore, verdict et recommandations" as E #ECFDF5
+rectangle "<b>EXPORTER LES RESULTATS</b>\n\nSerialisation des resultats\nGeneration des livrables" as F #DCFCE7
+
+() "JSON" as JSON
+() "CSV" as CSV
+() "SysML" as SYSML
+
+IN1 --> A : PDF ConOps\nbrut
+IN2 --> A : PDF OpsCon\nbrut
+IN3 --> A : Document depose\n+ metadonnees
+A --> B : Texte extrait / OCR\nsources et pages
+RULES1 --> B : D1/D2 et C1-C14
+RULES2 --> B : O1-O14 et O6a
+B --> C : Texte annote\nstatut des regles
+TEMPLATE --> C : Template ConOps\nrubriques attendues
+C --> D : Analyse JSON brute\nrubriques et preuves
+D --> E : JSON valide et repare\nconforme a ConOpsAnalysis
+E --> F : Classification et scores\nverdict et recommandations
+F --> JSON : Rapport JSON\nregles et preuves
+F --> CSV : Mesures et scores
+F --> SYSML : Modele SysML
+
+legend bottom
+  <b>C3 - LLM + regles officielles + evaluation Python</b>
+  <back:#E0F2FE> Extraction </back>  <back:#FFF8E1> Regles </back>  <back:#EDE9FE> LLM </back>
+  <back:#FEF3C7> Validation </back>  <back:#ECFDF5> Evaluation </back>  <back:#DCFCE7> Export </back>
+  Rectangles = traitements | Fleches = informations transmises
+endlegend
+
+@enduml

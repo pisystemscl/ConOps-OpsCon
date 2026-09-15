@@ -1,0 +1,260 @@
+@startuml
+title Diagramme de classes logique - Architecture Python
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+class StreamlitApp {
+  +upload_documents()
+  +select_experiment()
+  +render_experimental_protocol_panel()
+  +render_hypotheses_panel()
+  +render_multi_document_summary_panel()
+  +display_results()
+  +save_expert_feedback()
+}
+class ExperimentRunner {
+  +run()
+  +run_strategy_comparison()
+  +run_model_comparison()
+  +run_knowledge_format_comparison()
+}
+class BatchDocumentRunner {
+  +run(documents)
+  +aggregate_by_configuration()
+}
+class Configuration {
+  +code: str
+  +use_rules: bool
+  +use_rag: bool
+  +use_llm_evaluator: bool
+}
+class PDFLoader {
+  +extract_pdf_text()
+}
+class RAGEngine {
+  +build()
+  +context_for_prompt()
+  +retrieve_for_rules()
+  +retrieval_stats()
+}
+class RuleRepository {
+  +load_rules()
+  +by_id()
+  +by_family()
+  +validate_rules_integrity()
+  +build_rules_prompt_context()
+}
+class RuleBasedEvaluator {
+  +evaluate_rules()
+  +compute_rule_score()
+  +classify_document()
+}
+class Rule {
+  +id: str
+  +family: str
+  +weight: float
+  +expected: str
+}
+class RuleAssessment {
+  +status: str
+  +score_contribution: float
+  +evidence_quote: str
+  +source_page: int
+}
+class RAGChunk {
+  +text: str
+  +source: str
+  +page: int
+  +retrieval_score: float
+}
+class PromptContext {
+  +rules_context: str
+  +rag_chunks: list
+  +knowledge_context: str
+}
+class LLMResponse {
+  +raw_text: str
+  +parsed_json: dict
+}
+class ExtractionItem {
+  +item_type: str
+  +evidence: str
+  +human_review_needed: bool
+}
+class ExperimentRun {
+  +run_id: str
+  +document_hash: str
+  +repeat_count: int
+}
+class OntologyBuilder {
+  +build_ontology()
+  +build_knowledge_context()
+}
+class PromptBuilder {
+  +build_extraction_prompt()
+  +build_evaluator_prompt()
+}
+class JsonGuard {
+  +safe_llm_json_call()
+  +validate_json_schema()
+  +repair_json_once()
+}
+abstract class BaseLLM {
+  +generate()
+}
+class OllamaLLM
+class OpenAILLM
+class "MockLLM\n<<local heuristic>>" as MockLLM
+class "FineTunedLLM\n<<conditional C6/C7>>" as FineTunedLLM
+class FineTuningReadiness {
+  +ready: bool
+  +message()
+}
+class ConOpsExtractor {
+  +extract()
+}
+class PostProcessor {
+  +post_process_analysis()
+}
+class InterfaceExtractor {
+  +extract_structured_interfaces()
+}
+class RequirementCleaner {
+  +clean_requirement()
+  +clean_requirements()
+}
+class GoldStandardEvaluator {
+  +compare_extraction_to_gold()
+  +compute_precision_recall_f1()
+  +compute_rule_agreement()
+  +generate_gold_standard_report()
+}
+class BaselineGainEvaluator {
+  +gain_vs_baseline()
+  +interpret_baseline_gain()
+}
+class ScientificMetrics {
+  +compute_scientific_metrics()
+}
+class ScientificSummary {
+  +write_scientific_summary()
+}
+class SectionClassifier {
+  +classify_sections()
+  +export_section_classification()
+}
+class RepetitionAnalyzer {
+  +analyze_repetitions()
+  +repetition_warning()
+}
+class ConfigurationExplainer {
+  +explain_best_configuration()
+}
+class DocumentQualityEvaluator {
+  +evaluate()
+}
+class SemanticEvaluator {
+  +semantic_similarity()
+}
+class SysMLGenerator {
+  +generate_sysml_v2()
+  +validate_sysml_text()
+}
+class SysMLGraphGenerator {
+  +save_sysml_graph()
+  +generate_sysml_graph_exports()
+}
+class GraphGenerator {
+  +build_graph()
+  +graph_metrics()
+  +save_graph_data()
+  +save_pyvis_graph()
+  +save_3d_graph()
+}
+class ReportWriter {
+  +write_markdown_report()
+  +write_global_run_report()
+}
+class Exporter {
+  +export_detailed_csv()
+  +rule_assessment_dataframe()
+}
+class FineTuningDatasetBuilder {
+  +build_jsonl()
+}
+class "QualityFilter\n<<conditional>>" as QualityFilter
+class LoRATrainer {
+  +train()
+}
+class "ModelRegistry\n<<conditional>>" as ModelRegistry
+class FineTuningDataset
+class FineTunedModel
+class ConOpsAnalysis
+class EvaluationReport
+class ExperimentResult
+
+StreamlitApp --> ExperimentRunner
+StreamlitApp --> BatchDocumentRunner
+BatchDocumentRunner --> ExperimentRunner
+ExperimentRunner --> Configuration
+ExperimentRunner --> RAGEngine
+ExperimentRunner --> ConOpsExtractor
+ExperimentRunner --> DocumentQualityEvaluator
+ExperimentRunner --> RepetitionAnalyzer
+ConOpsExtractor --> PromptBuilder
+ConOpsExtractor --> BaseLLM
+ConOpsExtractor --> JsonGuard
+ConOpsExtractor --> PostProcessor
+PostProcessor --> RequirementCleaner
+PostProcessor --> InterfaceExtractor
+PromptBuilder --> RuleRepository
+PromptBuilder --> OntologyBuilder
+DocumentQualityEvaluator --> RuleBasedEvaluator
+DocumentQualityEvaluator --> SemanticEvaluator
+DocumentQualityEvaluator --> EvaluationReport
+RuleBasedEvaluator --> RuleAssessment
+RuleRepository --> Rule
+RAGEngine --> RAGChunk
+PromptBuilder --> PromptContext
+BaseLLM --> LLMResponse
+ConOpsAnalysis --> ExtractionItem
+ExperimentRunner --> ExperimentRun
+ConOpsExtractor --> ConOpsAnalysis
+ExperimentRunner --> ExperimentResult
+ExperimentRunner --> GoldStandardEvaluator
+StreamlitApp --> BaselineGainEvaluator
+StreamlitApp --> ScientificMetrics
+StreamlitApp --> ScientificSummary
+StreamlitApp --> SectionClassifier
+StreamlitApp --> ConfigurationExplainer
+BaseLLM <|-- OllamaLLM
+BaseLLM <|-- OpenAILLM
+BaseLLM <|-- MockLLM
+BaseLLM <|-- FineTunedLLM
+FineTunedLLM --> FineTuningReadiness
+FineTuningDatasetBuilder --> QualityFilter
+QualityFilter --> FineTuningDataset
+FineTuningDataset --> LoRATrainer
+LoRATrainer --> FineTunedModel
+FineTunedModel --> ModelRegistry
+ModelRegistry --> FineTunedLLM
+StreamlitApp --> SysMLGenerator
+StreamlitApp --> SysMLGraphGenerator
+StreamlitApp --> GraphGenerator
+StreamlitApp --> ReportWriter
+StreamlitApp --> Exporter
+
+note right of Configuration
+Isolation experimentale :
+modele, strategie,
+format de connaissance.
+end note
+note bottom of RuleRepository
+Source :
+data/rules/conops_opscon_rules_v3.json
+end note
+note bottom of FineTunedLLM
+Activation conditionnelle.
+C6/C7 exigent un adaptateur LoRA valide.
+end note
+@enduml
